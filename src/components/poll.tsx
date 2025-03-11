@@ -1,38 +1,41 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Poll.tsx
 import { useState } from "react";
 
-export interface PollProps {
-  pollData: Poll;
+interface PollOption {
+  text: string;
+  votes: number;
 }
 
-export interface Poll {
-  question: string;
-  options: string[];
+interface PollProps {
+  pollData: { question: string; options: PollOption[] };
+  onVote: (option: string) => void;
 }
 
-export const Poll = ({ pollData }: PollProps) => {
+const Poll: React.FC<PollProps> = ({ pollData, onVote }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [hasVoted, setHasVoted] = useState<boolean>(false);
 
-  const handleVote = (option: string): void => {
+  const handleVote = (option: string) => {
     setSelectedOption(option);
-    setHasVoted(true);
+    onVote(option);
   };
+
   return (
     <div className="max-w-md mx-auto p-4">
       <h2 className="text-xl mb-4">{pollData.question}</h2>
-      <div className="mb-4">
-        {pollData.options.map((option: any, index: any) => (
-          <button
-            key={index}
-            onClick={() => handleVote(option)}
-            className="w-full p-2 mb-2 bg-gray-200 rounded"
-          >
-            {option}
-          </button>
-        ))}
-      </div>
-      {hasVoted && <p className="text-green-500">You have voted!</p>}
+      {pollData.options.map((option, index) => (
+        <button
+          key={index}
+          onClick={() => handleVote(option.text)}
+          className="w-full p-2 mb-2 bg-gray-200 rounded"
+        >
+          {option.text}
+        </button>
+      ))}
+      {selectedOption && (
+        <p className="text-green-500">You voted for: {selectedOption}</p>
+      )}
     </div>
   );
 };
+
+export default Poll;
